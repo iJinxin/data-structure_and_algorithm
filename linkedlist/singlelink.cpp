@@ -14,7 +14,7 @@ class SingleList {
   void createSingleList(int size);     // 创建链表
   bool isEmpty();                      // 判断是否为空
   void insertNode(Node *data, int n);  // 插入数据
-  void removeNode();                   // 删除数据
+  void removeNode(int n);              // 删除数据
   void destroyLink();                  // 摧毁链表
   void getSingleListData();            // 获取链表数据
   void reverseSingleList();            // 链表反转
@@ -66,22 +66,73 @@ void SingleList::insertNode(Node *data, int n) {
   }
 
   // 队尾插入
+  // this->size + 1 < n 的情况也插入到队尾
   if (this->size < n) {
     Node *p = this->head;
     for (int i = 0; i < this->size; i++) {
-        p = p->next;
+      p = p->next;
     }
     p->next = data;
     data->next = NULL;
   } else if (n == 1) {
-      // 队首插入
-      Node *p = this->head->next;
-      data->next = p;
-      this->head->next = data;
+    // 队首插入
+    Node *p = this->head->next;
+    data->next = p;
+    this->head->next = data;
   } else {
-      // 队中插入
+    // 队中插入
+    Node *prep = this->head;
+    for (int i = 1; i < n; i++) {
+      prep = prep->next;
+    }
+    Node *p = prep->next;
+    prep->next = data;
+    data->next = p;
   }
+  this->size += 1;
 }
+// 删除节点
+void SingleList::removeNode(int n) {
+  if (isEmpty()) return;
+  // 无效
+  if (this->size < n) {
+    cout << "超出链表长度" << endl;
+  } else if (this->size == n) {
+    // 队尾删除
+    Node *p = this->head;
+    for (int i = 1; i < n; i++) {
+      p = p->next;
+    }
+    Node *p2 = p->next;
+    p->next = NULL;
+    free(p2);
+  } else if (n == 1) {
+    Node *p = this->head->next;
+    this->head->next = p->next;
+    free(p);
+  } else {
+    Node *p = this->head;
+    for (int i = 1; i < n; i++) {
+      p = p->next;
+    }
+    Node *p2 = p->next;
+    p->next = p2->next;
+    free(p2);
+  }
+  this->size -= 1;
+}
+
+// 清空链
+void SingleList::destroyLink() {
+  Node *p = this->head;
+  while (this->head) {
+    this->head = p->next;
+    free(p);
+    p = this->head;
+  }
+  this->size = 0;
+}
+
 // 获取链表内容
 void SingleList::getSingleListData() {
   cout << "singleList length: " << this->size << endl;
@@ -127,5 +178,21 @@ int main() {
   list.getSingleListData();
   list.reverseSingleList();
   list.getSingleListData();
+
+  // 插入检查
+  Node *newNode = new Node;
+  newNode->value = 111;
+  newNode->next = NULL;
+  list.insertNode(newNode, 2);
+  list.getSingleListData();
+
+  // 删除测试
+  list.removeNode(2);
+  list.getSingleListData();
+
+  // destroy
+  list.destroyLink();
+  list.getSingleListData();
+
   return 0;
 }
