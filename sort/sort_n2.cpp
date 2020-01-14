@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <iostream>
 
-#define RANDOM_SIZE 10000  // 排序量级
+#define RANDOM_SIZE 100000  // 排序量级
 
 using namespace std;
 
